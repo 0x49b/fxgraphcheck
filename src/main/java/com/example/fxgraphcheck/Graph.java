@@ -1,17 +1,22 @@
 package com.example.fxgraphcheck;
 
+import com.example.fxgraphcheck.cell.Cell;
+import com.example.fxgraphcheck.cell.CellLayer;
+import com.example.fxgraphcheck.edge.Edge;
+import com.example.fxgraphcheck.model.Model;
 import javafx.scene.Group;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+
+import java.util.List;
 
 public class Graph {
 
     private Model model;
-
     private Group canvas;
-
     private ZoomableScrollPane scrollPane;
-
     MouseGestures mouseGestures;
 
     /**
@@ -21,7 +26,14 @@ public class Graph {
      */
     CellLayer cellLayer;
 
+    ContextMenu contextMenu;
+    MenuItem delete;
+
     public Graph() {
+
+
+        this.setupContextMenu();
+        this.registerActionHandlers();
 
         this.model = new Model();
 
@@ -51,6 +63,22 @@ public class Graph {
         return model;
     }
 
+    private void setupContextMenu() {
+        contextMenu = new ContextMenu();
+        delete = new MenuItem("delete");
+        contextMenu.getItems().add(delete);
+    }
+
+    private void registerActionHandlers() {
+        delete.setOnAction(event -> {
+            List<Edge> edgesForCell = model.getEdgesForCell((Cell) contextMenu.getOwnerNode());
+            for (Edge e : edgesForCell) {
+                model.removeEdge(e);
+            }
+            model.removeCell((Cell) contextMenu.getOwnerNode());
+        });
+    }
+
     public void beginUpdate() {
     }
 
@@ -67,6 +95,10 @@ public class Graph {
         // enable dragging of cells
         for (Cell cell : model.getAddedCells()) {
             mouseGestures.makeDraggable(cell);
+
+            cell.setOnContextMenuRequested(event -> {
+                contextMenu.show(cell, event.getScreenX(), event.getScreenY());
+            });
         }
 
         // every cell must have a parent, if it doesn't, then the graphParent is

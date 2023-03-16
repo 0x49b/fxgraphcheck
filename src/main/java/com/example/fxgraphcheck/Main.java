@@ -1,25 +1,46 @@
 package com.example.fxgraphcheck;
 
+import com.example.fxgraphcheck.cell.CellType;
+import com.example.fxgraphcheck.layout.Layout;
+import com.example.fxgraphcheck.layout.RandomLayout;
+import com.example.fxgraphcheck.model.Model;
+import com.example.fxgraphcheck.view.Rail0rMenu;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
+import java.util.Objects;
+import java.util.UUID;
 
 public class Main extends Application {
 
-    Graph graph = new Graph();
+    Graph graph;
+    Rail0rMenu menu;
+    Timeline timeline;
 
     @Override
     public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
 
         graph = new Graph();
+        menu = new Rail0rMenu(graph);
+        timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> graph.endUpdate()));
+        timeline.setCycleCount(Animation.INDEFINITE);
 
+        root.setTop(menu);
         root.setCenter(graph.getScrollPane());
 
         Scene scene = new Scene(root, 1024, 768);
-        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("application.css")).toExternalForm());
+
+        this.setupEventHandlers();
 
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -28,6 +49,7 @@ public class Main extends Application {
 
         Layout layout = new RandomLayout(graph);
         layout.execute();
+        timeline.play();
 
     }
 
@@ -44,6 +66,8 @@ public class Main extends Application {
         model.addCell("Cell E", CellType.TRIANGLE);
         model.addCell("Cell F", CellType.RECTANGLE);
         model.addCell("Cell G", CellType.RECTANGLE);
+        model.addCell("ZS1", CellType.ZS);
+
 
         model.addEdge("Cell A", "Cell B");
         model.addEdge("Cell A", "Cell C");
@@ -58,6 +82,8 @@ public class Main extends Application {
         graph.endUpdate();
 
     }
+
+    private void setupEventHandlers() {}
 
     public static void main(String[] args) {
         launch(args);

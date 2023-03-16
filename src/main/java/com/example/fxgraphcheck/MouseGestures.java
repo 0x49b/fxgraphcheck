@@ -4,18 +4,19 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
+import java.util.List;
+
 public class MouseGestures {
 
     final DragContext dragContext = new DragContext();
 
     Graph graph;
 
-    public MouseGestures( Graph graph) {
+    public MouseGestures(Graph graph) {
         this.graph = graph;
     }
 
-    public void makeDraggable( final Node node) {
-
+    public void makeDraggable(final Node node) {
 
         node.setOnMousePressed(onMousePressedEventHandler);
         node.setOnMouseDragged(onMouseDraggedEventHandler);
@@ -33,7 +34,7 @@ public class MouseGestures {
             double scale = graph.getScale();
 
             dragContext.x = node.getBoundsInParent().getMinX() * scale - event.getScreenX();
-            dragContext.y = node.getBoundsInParent().getMinY()  * scale - event.getScreenY();
+            dragContext.y = node.getBoundsInParent().getMinY() * scale - event.getScreenY();
 
         }
     };
@@ -59,16 +60,40 @@ public class MouseGestures {
         }
     };
 
-    EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<MouseEvent>() {
+    EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
 
-        @Override
-        public void handle(MouseEvent event) {
+       /* int snapSize = 25;
 
+        double x = event.getX();
+        double y = event.getY();
+
+        double snapX = Math.round(x / snapSize) * snapSize;
+        double snapY = Math.round(y / snapSize) * snapSize;
+
+        System.out.println(event.getSource());
+        System.out.println(event);
+        System.out.println(snapX + " " + snapY);
+
+        Cell cell = (Cell) event.getSource();
+
+
+        List<Edge> edges = graph.getModel().getEdgesForCell(cell);
+        for (Edge e : edges) {
+            if (e.source.equals(cell)) {
+                e.line.startXProperty().setValue(snapX);
+                e.line.startYProperty().setValue(snapY);
+            }
+            if (e.target.equals(cell)) {
+                e.line.endXProperty().setValue(snapX);
+                e.line.endYProperty().setValue(snapY);
+            }
         }
+        cell.setPosition(snapX, snapY);*/
+
     };
 
-    class DragContext {
 
+    class DragContext {
         double x;
         double y;
 

@@ -1,3 +1,7 @@
 .scroll-pane > .viewport {
-    -fx-background-color: white;
+    -fx-background-color: #57667f;
+}
+
+.custom-menu-bar {
+    -fx-background-color: #293c60;
 }
