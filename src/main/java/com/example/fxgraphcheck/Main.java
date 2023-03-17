@@ -4,6 +4,7 @@ import com.example.fxgraphcheck.cell.CellType;
 import com.example.fxgraphcheck.layout.Layout;
 import com.example.fxgraphcheck.layout.RandomLayout;
 import com.example.fxgraphcheck.model.Model;
+import com.example.fxgraphcheck.station.Station;
 import com.example.fxgraphcheck.view.Rail0rMenu;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -78,6 +79,8 @@ public class Main extends Application {
         model.addEdge("Cell D", "Cell G");
 
         model.addEdge("Cell D", "Cell E", Color.RED);
+
+        model.addStation(new Station("Doppleschwand-Rom._SiC", "DOPP", 909, 273));
 
         graph.endUpdate();
 

@@ -1,10 +1,14 @@
 package com.example.fxgraphcheck.model;
 
-import com.example.fxgraphcheck.edge.Edge;
 import com.example.fxgraphcheck.cell.*;
+import com.example.fxgraphcheck.edge.Edge;
+import com.example.fxgraphcheck.station.Station;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Model {
@@ -18,6 +22,11 @@ public class Model {
     List<Edge> allEdges;
     List<Edge> addedEdges;
     List<Edge> removedEdges;
+
+    List<Station> allStations;
+    List<Station> addedStations;
+    List<Station> removedStations;
+
 
     Map<String, Cell> cellMap; // <id,cell>
 
@@ -39,6 +48,11 @@ public class Model {
         addedEdges = new ArrayList<>();
         removedEdges = new ArrayList<>();
 
+        allStations = new ArrayList<>();
+        addedStations = new ArrayList<>();
+        removedStations = new ArrayList<>();
+
+
         cellMap = new HashMap<>(); // <id,cell>
 
     }
@@ -46,6 +60,7 @@ public class Model {
     public void clearAddedLists() {
         addedCells.clear();
         addedEdges.clear();
+        addedStations.clear();
     }
 
     public List<Cell> getAddedCells() {
@@ -72,47 +87,63 @@ public class Model {
         return allEdges;
     }
 
+    public List<Station> getAllStations() {
+        return allStations;
+    }
+
+    public List<Station> getAddedStations() {
+        return addedStations;
+    }
+
+    public List<Station> getRemovedStations() {
+        return removedStations;
+    }
 
     public List<Edge> getEdgesForCell(Cell cell) {
         return this.allEdges.stream().filter(edge -> edge.getSource().equals(cell) || edge.getTarget().equals(cell)).collect(Collectors.toList());
     }
 
     public void removeEdge(Edge edge) {
-        this.allEdges.remove(edge);
-        this.removedEdges.add(edge);
+        allEdges.remove(edge);
+        removedEdges.add(edge);
     }
 
     public void removeCell(Cell cell) {
-        this.allCells.remove(cell);
-        this.removedCells.add(cell);
+        allCells.remove(cell);
+        removedCells.add(cell);
+    }
+
+    public void removeStation(Station station) {
+        allStations.remove(station);
+        removedStations.add(station);
     }
 
     public void addCell(String id, CellType type) {
 
         switch (type) {
-
-            case RECTANGLE:
+            case RECTANGLE -> {
                 RectangleCell rectangleCell = new RectangleCell(id);
                 addCell(rectangleCell);
-                break;
-
-            case TRIANGLE:
+            }
+            case TRIANGLE -> {
                 TriangleCell triangleCell = new TriangleCell(id);
                 addCell(triangleCell);
-                break;
-            case ZS:
+            }
+            case ZS -> {
                 ZSCell zsCell = new ZSCell(id);
                 addCell(zsCell);
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Unsupported type: " + type);
+            }
+            default -> throw new UnsupportedOperationException("Unsupported type: " + type);
         }
     }
 
     private void addCell(Cell cell) {
         addedCells.add(cell);
         cellMap.put(cell.getCellId(), cell);
+    }
+
+    public void addStation(Station station){
+        addedStations.add(station);
     }
 
     public void addEdge(String sourceId, String targetId) {
@@ -129,7 +160,7 @@ public class Model {
     /**
      * Attach all cells which don't have a parent to graphParent
      *
-     * @param cellList
+     * @param cellList A list of {@link Cell}
      */
     public void attachOrphansToGraphParent(List<Cell> cellList) {
 
@@ -144,7 +175,7 @@ public class Model {
     /**
      * Remove the graphParent reference if it is set
      *
-     * @param cellList
+     * @param cellList a list of {@link Cell}
      */
     public void disconnectFromGraphParent(List<Cell> cellList) {
 
@@ -152,6 +183,7 @@ public class Model {
             graphParent.removeCellChild(cell);
         }
     }
+
 
     public void merge() {
 
@@ -169,6 +201,12 @@ public class Model {
         addedEdges.clear();
         removedEdges.clear();
 
+        // stations
+        allStations.addAll(addedStations);
+        allCells.removeAll(removedCells);
+
+        addedStations.clear();
+        removedStations.clear();
     }
 
 }

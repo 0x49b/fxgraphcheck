@@ -4,6 +4,7 @@ import com.example.fxgraphcheck.cell.Cell;
 import com.example.fxgraphcheck.cell.CellLayer;
 import com.example.fxgraphcheck.edge.Edge;
 import com.example.fxgraphcheck.model.Model;
+import com.example.fxgraphcheck.station.Station;
 import javafx.scene.Group;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -14,9 +15,9 @@ import java.util.List;
 
 public class Graph {
 
-    private Model model;
+    private final Model model;
     private Group canvas;
-    private ZoomableScrollPane scrollPane;
+    private final ZoomableScrollPane scrollPane;
     MouseGestures mouseGestures;
 
     /**
@@ -30,7 +31,6 @@ public class Graph {
     MenuItem delete;
 
     public Graph() {
-
 
         this.setupContextMenu();
         this.registerActionHandlers();
@@ -87,10 +87,12 @@ public class Graph {
         // add components to graph pane
         getCellLayer().getChildren().addAll(model.getAddedEdges());
         getCellLayer().getChildren().addAll(model.getAddedCells());
+        getCellLayer().getChildren().addAll(model.getAddedStations());
 
         // remove components from graph pane
         getCellLayer().getChildren().removeAll(model.getRemovedCells());
         getCellLayer().getChildren().removeAll(model.getRemovedEdges());
+        getCellLayer().getChildren().removeAll(model.getRemovedStations());
 
         // enable dragging of cells
         for (Cell cell : model.getAddedCells()) {
@@ -101,12 +103,18 @@ public class Graph {
             });
         }
 
+        for(Station station: model.getAllStations()){
+            mouseGestures.makeDraggable(station);
+        }
+
         // every cell must have a parent, if it doesn't, then the graphParent is
         // the parent
         getModel().attachOrphansToGraphParent(model.getAddedCells());
 
         // remove reference to graphParent
         getModel().disconnectFromGraphParent(model.getRemovedCells());
+
+
 
         // merge added & removed cells with all cells
         getModel().merge();
