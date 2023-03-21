@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +19,17 @@ public class Cell extends Pane {
     Node view;
     BooleanProperty active = new SimpleBooleanProperty(false);
 
+    private final Rectangle activeIndicator;
+    private final int CELL_SIZE = 25;
+
     public Cell(String cellId) {
         this.cellId = cellId;
+        activeIndicator = new Rectangle(CELL_SIZE, CELL_SIZE);
         this.registerEventHandlers();
     }
 
-    public void setPosition(double x, double y){}
+    public void setPosition(double x, double y) {
+    }
 
   /*  public void setX(double x) {
         this.setLayoutX(x);
@@ -37,6 +44,9 @@ public class Cell extends Pane {
         this.setY(y);
     }*/
 
+    public int getCellSize() {
+        return this.CELL_SIZE;
+    }
 
     public boolean isActive() {
         return active.get();
@@ -86,9 +96,21 @@ public class Cell extends Pane {
 
     private void registerEventHandlers() {
 
+        this.active.addListener(event -> {
+            if (isActive()) {
+                this.activeIndicator.setFill(Color.RED);
+                getChildren().add(this.activeIndicator);
+            } else {
+                this.activeIndicator.setFill(Color.TRANSPARENT);
+                getChildren().remove(this.activeIndicator);
+            }
+        });
+
         this.setOnMouseClicked(event -> {
                     if (event.getButton().equals(MouseButton.PRIMARY)) {
-                        this.setActive(true);
+                        if (event.getClickCount() == 2) {
+                            this.setActive(!this.isActive());
+                        }
                     }
                 }
         );
